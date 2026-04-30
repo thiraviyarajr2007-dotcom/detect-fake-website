@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from urllib.parse import urlparse
 
-from .models import ContentContext, DomainContext, ScanRequestContext
+from .models import DomainContext, ScanRequestContext
 
 BRAND_HINTS = {
     "paytm": "Paytm",

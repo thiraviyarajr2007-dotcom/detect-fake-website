@@ -11,29 +11,37 @@ def render_dashboard() -> str:
   <title>PhishGuard AI</title>
   <style>
     :root {
-      --bg: #141517;
-      --bg-2: #1b1d22;
-      --panel: rgba(28, 31, 37, 0.96);
-      --panel-2: rgba(23, 26, 31, 0.98);
-      --ink: #eef2f6;
-      --muted: #8b92a1;
-      --accent: #00a3ff;
-      --accent-2: #8ec7ff;
-      --safe: #00e676;
-      --warn: #ffd54f;
-      --danger: #ff5252;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-strong: rgba(117, 94, 255, 0.95);
-      --glow: rgba(0, 163, 255, 0.22);
+      --bg: #0d1117;
+      --bg-2: #161b22;
+      --panel: rgba(22, 27, 34, 0.97);
+      --panel-2: rgba(13, 17, 23, 0.98);
+      --ink: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-2: #79c0ff;
+      --accent-glow: rgba(88, 166, 255, 0.4);
+      --safe: #3fb950;
+      --safe-glow: rgba(63, 185, 80, 0.3);
+      --warn: #d29922;
+      --danger: #f85149;
+      --danger-glow: rgba(248, 81, 73, 0.3);
+      --border: rgba(240, 246, 252, 0.1);
+      --border-strong: rgba(88, 166, 255, 0.4);
+      --glow: rgba(88, 166, 255, 0.15);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; }
+    ::selection { background: rgba(88, 166, 255, 0.3); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(240, 246, 252, 0.12); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(240, 246, 252, 0.2); }
     body {
       margin: 0;
-      font-family: "Space Grotesk", "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+      font-family: "Space Grotesk", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
       color: var(--ink);
-      background:
-        radial-gradient(circle at top center, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0/32px 32px,
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      background: var(--bg);
+      min-height: 100vh;
     }
     body::before {
       content: "";
@@ -41,8 +49,8 @@ def render_dashboard() -> str:
       inset: 0;
       pointer-events: none;
       background:
-        radial-gradient(circle at 50% 0%, rgba(0,163,255,0.12), transparent 30%),
-        radial-gradient(circle at 100% 20%, rgba(142,199,255,0.08), transparent 24%);
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88,166,255,0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(136,100,255,0.06), transparent);
     }
     .wrap {
       width: 100%;
@@ -59,8 +67,10 @@ def render_dashboard() -> str:
       align-items: center;
       justify-content: space-between;
       padding: 0 30px 0 38px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      background: #13171d;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
     .topbar-left {
       display: flex;
@@ -80,15 +90,19 @@ def render_dashboard() -> str:
       gap: 18px;
     }
     .top-tab {
-      color: #aeb5c2;
+      color: #8b949e;
       text-decoration: none;
       padding: 29px 10px 23px;
-      border-bottom: 3px solid transparent;
+      border-bottom: 2px solid transparent;
       font-weight: 600;
-      font-size: 0.98rem;
+      font-size: 0.92rem;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .top-tab:hover {
+      color: #c9d1d9;
     }
     .top-tab.active {
-      color: #dbe3ef;
+      color: #e6edf3;
       border-bottom-color: var(--accent);
     }
     .topbar-right {
@@ -102,10 +116,16 @@ def render_dashboard() -> str:
       height: 38px;
       display: grid;
       place-items: center;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px;
+      background: rgba(240,246,252,0.04);
+      border: 1px solid var(--border);
       font-size: 1rem;
+      transition: background var(--transition), border-color var(--transition);
+      cursor: pointer;
+    }
+    .top-icon:hover {
+      background: rgba(240,246,252,0.08);
+      border-color: rgba(240,246,252,0.16);
     }
     .home, .panel {
       background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
@@ -115,15 +135,15 @@ def render_dashboard() -> str:
     }
     .home {
       margin: 0;
-      padding: 28px 30px;
+      padding: 24px 20px;
       border-radius: 0;
       text-align: left;
       position: relative;
       top: 0;
       align-self: stretch;
       border: 0;
-      border-right: 1px solid rgba(255,255,255,0.04);
-      background: #181d24;
+      border-right: 1px solid var(--border);
+      background: rgba(13, 17, 23, 0.98);
       box-shadow: none;
     }
     .brand {
@@ -174,28 +194,42 @@ def render_dashboard() -> str:
     .flow-step {
       padding: 10px 8px;
       border: 1px solid var(--border);
-      border-radius: 999px;
-      background: rgba(20, 22, 27, 0.92);
+      border-radius: 8px;
+      background: rgba(22, 27, 34, 0.6);
       font-size: 0.86rem;
       color: var(--muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .flow-step:hover {
+      color: var(--ink);
+      background: rgba(22, 27, 34, 0.9);
+      border-color: rgba(240,246,252,0.16);
     }
     .flow-step.active {
       color: var(--ink);
-      border-color: rgba(0,163,255,0.5);
-      box-shadow: 0 0 0 1px rgba(0,163,255,0.18) inset;
+      border-color: rgba(88,166,255,0.4);
+      background: rgba(88,166,255,0.08);
     }
     .home .flow-step {
       border-radius: 0;
-      padding: 18px 18px;
+      padding: 14px 18px;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
+      font-size: 0.78rem;
       background: transparent;
       border: 0;
-      border-left: 4px solid transparent;
+      border-left: 3px solid transparent;
+      transition: all var(--transition);
+    }
+    .home .flow-step:hover {
+      background: rgba(240,246,252,0.04);
+      color: var(--ink);
     }
     .home .flow-step.active {
-      background: rgba(0,163,255,0.08);
+      background: rgba(88,166,255,0.06);
       border-left-color: var(--accent);
+      color: var(--ink);
       box-shadow: none;
     }
     .scan-shell { display: grid; gap: 14px; justify-items: center; }
@@ -203,30 +237,47 @@ def render_dashboard() -> str:
     input, textarea {
       width: 100%;
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 13px 15px;
       font: inherit;
       color: var(--ink);
-      background: rgba(39, 42, 50, 0.96);
+      background: rgba(22, 27, 34, 0.95);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
     }
-    input::placeholder, textarea::placeholder { color: #6f85a4; }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+    input::placeholder, textarea::placeholder { color: #484f58; }
     textarea { min-height: 120px; resize: vertical; }
     button {
       border: 0;
-      border-radius: 999px;
+      border-radius: 8px;
       padding: 13px 20px;
-      background: linear-gradient(90deg, var(--accent), #5fb8ff);
-      color: #061018;
-      font-weight: 800;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 8px 22px var(--glow);
+      transition: background var(--transition), box-shadow var(--transition), transform 0.15s ease;
+    }
+    button:hover {
+      background: #79c0ff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    button:active {
+      transform: scale(0.97);
     }
     .loading-box, .quick-history, .metric, .stack-card, .compare-card, .info-card, .setting-card {
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 10px;
       padding: 16px;
-      background: rgba(23, 26, 31, 0.96);
+      background: rgba(22, 27, 34, 0.8);
+      transition: border-color var(--transition);
+    }
+    .compare-card:hover, .stack-card:hover {
+      border-color: rgba(240,246,252,0.16);
     }
     .loading-box {
       width: 100%;
@@ -243,10 +294,10 @@ def render_dashboard() -> str:
     .spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(142,160,185,0.35);
-      border-top-color: var(--accent-2);
+      border: 2px solid rgba(139,148,158,0.25);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
       opacity: 0;
     }
     .loading.active .spinner { opacity: 1; }
@@ -262,7 +313,7 @@ def render_dashboard() -> str:
       width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
       border-radius: 999px;
-      transition: width 0.35s ease;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .progress-steps {
       display: grid;
@@ -284,27 +335,33 @@ def render_dashboard() -> str:
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       margin-bottom: 8px;
       padding: 12px 14px;
-      border-radius: 16px;
+      border-radius: 10px;
       border: 1px solid var(--border);
-      background: #171a1f;
+      background: rgba(22, 27, 34, 0.7);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .recent-item:hover {
+      background: rgba(22, 27, 34, 0.95);
+      border-color: rgba(240,246,252,0.16);
     }
     .section-stack {
       display: grid;
       gap: 18px;
-      padding: 34px 38px 32px;
-      background: #10151c;
+      padding: 28px 32px 28px;
+      background: var(--bg);
       border: 0;
       border-radius: 0;
+      overflow-y: auto;
     }
-    .panel { border-radius: 18px; padding: 22px; background: #1d222a; }
+    .panel { border-radius: 12px; padding: 22px; background: rgba(22, 27, 34, 0.95); border: 1px solid var(--border); }
     .panel:first-child {
       background:
-        radial-gradient(circle at center top, rgba(0,163,255,0.06), transparent 34%),
-        linear-gradient(180deg, #0f141b 0%, #10151c 100%);
-      border: 0;
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(88,166,255,0.04), transparent),
+        rgba(13, 17, 23, 0.95);
+      border: 1px solid var(--border);
       box-shadow: none;
       padding: 0 0 8px;
     }
@@ -344,11 +401,16 @@ def render_dashboard() -> str:
     .hero-console .scan-row {
       grid-template-columns: minmax(0, 1fr) 210px;
       gap: 0;
-      border: 1px solid rgba(0,163,255,0.16);
-      border-radius: 14px;
+      border: 1px solid rgba(88,166,255,0.2);
+      border-radius: 12px;
       overflow: hidden;
-      background: rgba(28,34,42,0.95);
-      box-shadow: 0 0 0 1px rgba(0,163,255,0.06), 0 18px 36px rgba(0, 75, 130, 0.12);
+      background: rgba(22,27,34,0.95);
+      box-shadow: 0 0 0 1px rgba(88,166,255,0.06), 0 12px 32px rgba(0,0,0,0.2);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .hero-console .scan-row:focus-within {
+      border-color: rgba(88,166,255,0.4);
+      box-shadow: 0 0 0 3px var(--glow), 0 12px 32px rgba(0,0,0,0.2);
     }
     .hero-console input {
       border: 0;
@@ -360,10 +422,14 @@ def render_dashboard() -> str:
     }
     .hero-console button {
       border-radius: 0;
-      box-shadow: 0 0 28px rgba(0,163,255,0.24);
-      letter-spacing: 0.18em;
+      box-shadow: none;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
+      background: var(--accent);
+    }
+    .hero-console button:hover {
+      background: #79c0ff;
     }
     .hero-console .loading-box {
       margin-top: 14px;
@@ -593,10 +659,16 @@ def render_dashboard() -> str:
     .button-outline {
       width: 100%;
       margin-top: auto;
-      border: 1px solid rgba(255,173,167,0.35);
+      border: 1px solid rgba(240,246,252,0.15);
       background: transparent;
-      color: #ffb2aa;
+      color: #c9d1d9;
       box-shadow: none;
+      transition: all var(--transition);
+    }
+    .button-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(88,166,255,0.06);
     }
     .app-view { display: none; }
     .app-view.active { display: grid; gap: 18px; }
@@ -607,11 +679,16 @@ def render_dashboard() -> str:
     }
     .stat-card {
       min-height: 180px;
-      border-radius: 18px;
+      border-radius: 12px;
       padding: 22px;
-      background: #1d222a;
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.22);
+      background: rgba(22, 27, 34, 0.8);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+      transition: border-color var(--transition), transform 0.2s ease;
+    }
+    .stat-card:hover {
+      border-color: rgba(240,246,252,0.16);
+      transform: translateY(-2px);
     }
     .stat-card .mini-stat-value {
       font-size: 3.2rem;
@@ -623,10 +700,14 @@ def render_dashboard() -> str:
       gap: 18px;
     }
     .list-card {
-      border-radius: 18px;
+      border-radius: 12px;
       padding: 22px;
-      background: #1d222a;
-      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(22, 27, 34, 0.8);
+      border: 1px solid var(--border);
+      transition: border-color var(--transition);
+    }
+    .list-card:hover {
+      border-color: rgba(240,246,252,0.14);
     }
     .log-row {
       display: grid;
@@ -664,25 +745,27 @@ def render_dashboard() -> str:
     }
     .setting-row:first-child { border-top: 0; }
     .switch {
-      width: 58px;
-      height: 30px;
-      border-radius: 999px;
-      background: #2a2f37;
+      width: 52px;
+      height: 28px;
+      border-radius: 14px;
+      background: #30363d;
       position: relative;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: background var(--transition);
     }
     .switch::after {
       content: "";
       position: absolute;
       top: 3px;
       left: 3px;
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      background: #f4f7fb;
+      background: #e6edf3;
+      transition: left var(--transition);
     }
     .switch.on { background: var(--accent); }
-    .switch.on::after { left: 31px; }
+    .switch.on::after { left: 27px; }
     .api-grid {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
@@ -707,20 +790,24 @@ def render_dashboard() -> str:
     }
     .subtab {
       padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      color: #aeb7c4;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(240,246,252,0.03);
+      color: #8b949e;
       font-size: 0.82rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       cursor: pointer;
+      transition: all var(--transition);
+    }
+    .subtab:hover {
+      color: #c9d1d9;
+      background: rgba(240,246,252,0.06);
     }
     .subtab.active {
-      color: #dff0ff;
-      border-color: rgba(0,163,255,0.35);
-      box-shadow: inset 0 0 0 1px rgba(0,163,255,0.18);
-      background: rgba(0,163,255,0.09);
+      color: #e6edf3;
+      border-color: rgba(88,166,255,0.35);
+      background: rgba(88,166,255,0.08);
     }
     .subview { display: none; }
     .subview.active { display: grid; gap: 18px; }
@@ -1028,7 +1115,7 @@ def render_dashboard() -> str:
         </div>
       </div>
       <div class="flow">
-        <div class="flow-step active" data-view="dashboard">Overview</div>
+        <div class="flow-step active" data-view="dashboard">Home</div>
         <div class="flow-step" data-view="scans">Live Feed</div>
         <div class="flow-step" data-view="threat-intel">Threat Intel</div>
         <div class="flow-step" data-view="complaint">Raise Complaint</div>
@@ -1056,7 +1143,7 @@ def render_dashboard() -> str:
             </p>
             <form id="scan-form" class="scan-shell hero-console" style="max-width:820px;margin:0 auto;">
               <div class="scan-row">
-                <input id="url-input" name="url" placeholder="https://suspicious-site.com/login" required />
+                <input id="url-input" name="url" placeholder="Enter Website URL here" required />
                 <button type="submit" id="dashboard-scan-button">Scan Now</button>
               </div>
               <div class="loading-box loading" id="loading-box" style="padding-top:8px;">
@@ -1488,7 +1575,7 @@ def render_dashboard() -> str:
             <div id="domain-registrar" style="display:none;">Unknown</div>
             <div id="brand-target" style="display:none;">Unknown</div>
           </div>
-          <button type="button" class="button-outline" id="download-report">Takedown Request</button>
+          <button type="button" class="button-outline" id="download-report">Download Latest Report</button>
         </div>
       </section>
       </section>
@@ -1521,7 +1608,7 @@ def render_dashboard() -> str:
         <div class="intel-grid">
           <div class="list-card">
             <div class="actions" style="justify-content:space-between;align-items:center;margin-bottom:18px;">
-              <h2 style="margin:0;">Core Infrastructure Data</h2>
+              <h2 style="margin:0;">Domain Information</h2>
               <div class="tiny-pill phishing">VERIFIED MALICIOUS PATTERN</div>
             </div>
             <table class="intel-table">
@@ -1904,7 +1991,7 @@ def render_dashboard() -> str:
           domainScore += 18;
           reasons.push("The URL is unusually long.");
         }
-        if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+        if (/^\\d{1,3}(\\.\\d{1,3}){3}$/.test(hostname)) {
           domainScore += 45;
           reasons.push("The link uses an IP address instead of a normal domain.");
         }
@@ -2023,7 +2110,7 @@ def render_dashboard() -> str:
       dashboardVerdictNote.textContent = looksReal
         ? `Low phishing score: ${body.phishing_probability}%. This result will stay here on the dashboard.`
         : `Phishing score: ${body.phishing_probability}%. This link looks risky. Opening Live Feed in 7 seconds.`;
-      dashboardResultUrl.textContent = body.url.replace(/^https?:\/\//, "");
+      dashboardResultUrl.textContent = body.url.replace(/^https?:\\/\\//, "");
       dashboardDomainScore.textContent = body.domain_score + "%";
       dashboardContentScore.textContent = body.content_score + "%";
       dashboardImageScore.textContent = body.image_score + "%";
@@ -2128,7 +2215,7 @@ def render_dashboard() -> str:
         const item = document.createElement("div");
         item.className = "recent-item";
         const badgeClass = row.verdict === "Phishing" ? "tiny-pill phishing" : row.verdict === "Suspicious" ? "tiny-pill suspicious" : "tiny-pill safe";
-        item.innerHTML = `<strong>${row.url.replace(/^https?:\/\//, "")}</strong><span class="${badgeClass}">${verdictIcon(row.verdict)}</span>`;
+        item.innerHTML = `<strong>${row.url.replace(/^https?:\\/\\//, "")}</strong><span class="${badgeClass}">${verdictIcon(row.verdict)}</span>`;
         recentList.appendChild(item);
       });
     }
@@ -2160,13 +2247,13 @@ def render_dashboard() -> str:
     function renderPreviewShots(response) {
       const suspectUrl = response.url;
       const originalUrl = response.reference_url || response.url;
-      websiteLabel.textContent = suspectUrl.replace(/^https?:\/\//, "");
-      genuineLabel.textContent = originalUrl.replace(/^https?:\/\//, "");
+      websiteLabel.textContent = suspectUrl.replace(/^https?:\\/\\//, "");
+      genuineLabel.textContent = originalUrl.replace(/^https?:\\/\\//, "");
       applyPreview(suspectCard, suspectPreview, suspectUrl);
       applyPreview(genuineCard, genuinePreview, originalUrl);
     }
     function renderDomainDetails(response) {
-      const cleanUrl = response.url.replace(/^https?:\/\//, "");
+      const cleanUrl = response.url.replace(/^https?:\\/\\//, "");
       domainName.textContent = cleanUrl;
       domainCreated.textContent = response.domain_age_days == null ? "Unknown" : `${response.domain_age_days} day(s) ago`;
       domainSsl.textContent = response.has_ssl == null ? "Unknown" : (response.has_ssl ? "Yes" : "No");

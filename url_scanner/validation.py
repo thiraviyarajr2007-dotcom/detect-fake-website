@@ -8,9 +8,6 @@ def validate_url(url: str) -> str | None:
     if not candidate:
         return None
 
-    if "://" not in candidate:
-        candidate = f"https://{candidate}"
-
     parsed = urlparse(candidate)
     if parsed.scheme not in {"http", "https"}:
         return None

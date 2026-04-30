@@ -162,8 +162,9 @@ class DomainIntelligenceEngine:
                 score += 8
                 reasons.append("Registrar metadata suggests low-trust or privacy-shielded registration.")
 
-        if context.source:
-            reasons.append(f"Domain intelligence source: {context.source}.")
+        if score > 0:
+            source = context.source or "user-provided"
+            reasons.append(f"Domain intelligence source: {source}.")
 
         return EngineBreakdown(score=_clamp_score(score), reasons=reasons)
 

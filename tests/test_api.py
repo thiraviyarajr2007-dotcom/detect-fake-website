@@ -130,6 +130,8 @@ def test_get_history_item_returns_404_for_missing_scan(tmp_path) -> None:
 
 def test_dashboard_route_renders_html(tmp_path) -> None:
     client = TestClient(create_app(tmp_path / "scanner.db"))
+    client.post("/auth/register", json={"username": "testuser", "email": "test@example.com", "password": "password123"})
+    client.post("/auth/login", json={"username": "testuser", "password": "password123"})
 
     response = client.get("/")
 

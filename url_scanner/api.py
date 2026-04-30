@@ -7,16 +7,18 @@ from collections import Counter
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Cookie, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, PlainTextResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from pydantic import BaseModel, Field
 
 from .architecture import describe_architecture
 from .analyzer import AnalysisError, Analyzer
+from .auth import AuthStore
 from .cache import CacheService
 from .dashboard import render_dashboard
 from .intelligence import ContextEnricher
+from .login_page import render_login
 from .models import (
     ContentContext,
     DomainContext,
@@ -184,13 +186,62 @@ def create_app(db_path: str | Path = "scan_history.db") -> FastAPI:
     store = ScanStore(db_path)
     analyzer = Analyzer()
     enricher = ContextEnricher()
+    auth_store = AuthStore(db_path)
     app.state.store = store
     app.state.cache_service = CacheService(analyzer=analyzer, store=store)
     app.state.monitor = DomainFeedMonitor(analyzer=analyzer, enricher=enricher)
     app.state.enricher = enricher
+    app.state.auth_store = auth_store
+
+    @app.get("/login", response_class=HTMLResponse)
+    async def login_page() -> HTMLResponse:
+        return HTMLResponse(render_login())
+
+    @app.post("/auth/register")
+    async def auth_register(payload: dict) -> JSONResponse:
+        username = (payload.get("username") or "").strip()
+        email = (payload.get("email") or "").strip()
+        password = payload.get("password") or ""
+        if not username or not email or len(password) < 6:
+            raise HTTPException(status_code=422, detail="Username, email, and password (min 6 chars) are required")
+        user = app.state.auth_store.register(username, email, password)
+        if user is None:
+            raise HTTPException(status_code=409, detail="Username or email already exists")
+        return JSONResponse({"message": "Account created", "username": user.username})
+
+    @app.post("/auth/login")
+    async def auth_login(payload: dict) -> JSONResponse:
+        username = (payload.get("username") or "").strip()
+        password = payload.get("password") or ""
+        user = app.state.auth_store.authenticate(username, password)
+        if user is None:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        token = app.state.auth_store.create_session(user.user_id)
+        response = JSONResponse({"message": "Login successful", "username": user.username})
+        response.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=72 * 3600)
+        return response
+
+    @app.post("/auth/logout")
+    async def auth_logout(session_token: str | None = Cookie(default=None)) -> JSONResponse:
+        if session_token:
+            app.state.auth_store.delete_session(session_token)
+        response = JSONResponse({"message": "Logged out"})
+        response.delete_cookie("session_token")
+        return response
+
+    @app.get("/auth/me")
+    async def auth_me(session_token: str | None = Cookie(default=None)) -> JSONResponse:
+        if not session_token:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        user = app.state.auth_store.get_user_by_session(session_token)
+        if user is None:
+            raise HTTPException(status_code=401, detail="Session expired")
+        return JSONResponse({"username": user.username, "email": user.email})
 
     @app.get("/", response_class=HTMLResponse)
-    async def dashboard() -> HTMLResponse:
+    async def dashboard(session_token: str | None = Cookie(default=None)) -> Response:
+        if not session_token or app.state.auth_store.get_user_by_session(session_token) is None:
+            return RedirectResponse(url="/login", status_code=302)
         return HTMLResponse(render_dashboard())
 
     @app.get("/architecture")

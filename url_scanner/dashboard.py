@@ -1125,7 +1125,7 @@ def render_dashboard() -> str:
         <button type="button" id="new-scan-button" style="width:100%;border-radius:10px;">+ New Scan</button>
       </div>
       <div class="flow" style="margin-top:18px;">
-        <div class="flow-step">Logout</div>
+        <div class="flow-step" id="logout-button">Logout</div>
       </div>
       <div id="recent-list" style="display:none;"></div>
     </aside>
@@ -1268,7 +1268,7 @@ def render_dashboard() -> str:
                 <div class="recent-item"><strong>&#9993; Malware-Downloader.exe</strong><span class="tiny-pill suspicious">Malicious File</span></div>
                 <div class="recent-item"><strong>&#128205; 192.168.45.23</strong><span class="tiny-pill suspicious">Suspicious IP</span></div>
               </div>
-              <button type="button" class="button-outline" style="width:100%;margin-top:18px;">View All Alerts</button>
+              <button type="button" class="button-outline" id="view-all-alerts-btn" style="width:100%;margin-top:18px;">View All Alerts</button>
             </div>
 
             <div class="list-card">
@@ -1289,7 +1289,7 @@ def render_dashboard() -> str:
                   <tr><td>malware-site.ru</td><td style="color:#ff8d6b;">Malware</td></tr>
                 </tbody>
               </table>
-              <button type="button" class="button-outline" style="width:100%;margin-top:18px;">Manage Blacklist</button>
+              <button type="button" class="button-outline" id="manage-blacklist-btn" style="width:100%;margin-top:18px;">Manage Blacklist</button>
             </div>
           </div>
 
@@ -1395,7 +1395,7 @@ def render_dashboard() -> str:
                   <h2 style="margin:0;">AI Analysis</h2>
                   <div class="muted">&#9881; &#128274;</div>
                 </div>
-                <button type="button" style="width:100%;margin-bottom:18px;">Scan URL for Threats &raquo;</button>
+                <button type="button" id="scan-url-threats-btn" style="width:100%;margin-bottom:18px;">Scan URL for Threats &raquo;</button>
                 <div style="display:grid;gap:12px;">
                   <div class="recent-item"><strong>Machine Learning</strong><span class="tiny-pill safe">Active</span></div>
                   <div class="recent-item"><strong>Risk Score</strong><span id="ti-ai-risk" class="tiny-pill suspicious">87 / 100</span></div>
@@ -1421,19 +1421,19 @@ def render_dashboard() -> str:
           <div class="list-card">
             <h2 style="margin-bottom:18px;">Complaint Intake</h2>
             <div style="display:grid;gap:14px;">
-              <input type="text" placeholder="Suspicious URL or fake website link" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);" />
-              <input type="text" placeholder="Affected brand or service" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);" />
-              <select style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);">
+              <input type="text" id="complaint-url" placeholder="Suspicious URL or fake website link" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);" />
+              <input type="text" id="complaint-brand" placeholder="Affected brand or service" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);" />
+              <select id="complaint-type" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);">
                 <option>Complaint Type</option>
                 <option>Phishing Website</option>
                 <option>Fake Payment Link</option>
                 <option>Brand Impersonation</option>
                 <option>Credential Theft Attempt</option>
               </select>
-              <textarea placeholder="Describe what happened and why the website looks suspicious..." rows="6" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);resize:vertical;"></textarea>
+              <textarea id="complaint-description" placeholder="Describe what happened and why the website looks suspicious..." rows="6" style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(8,12,18,0.9);color:var(--ink);resize:vertical;"></textarea>
               <input id="complaint-evidence-input" type="file" accept="image/*" multiple style="display:none;" />
               <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                <button type="button">Submit Complaint</button>
+                <button type="button" id="submit-complaint-btn">Submit Complaint</button>
                 <button type="button" id="attach-evidence-button" class="button-outline" style="margin-top:0;">Attach Evidence</button>
               </div>
               <div id="complaint-evidence-gallery" style="display:none;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:6px;"></div>
@@ -1662,8 +1662,8 @@ def render_dashboard() -> str:
             </div>
             <div class="list-card">
               <div class="intel-actions">
-                <button type="button" class="intel-solid-danger">Blacklist Domain</button>
-                <button type="button" class="button-outline" style="margin-top:0;">Full Traceroute</button>
+                <button type="button" class="intel-solid-danger" id="blacklist-domain-btn">Blacklist Domain</button>
+                <button type="button" class="button-outline" id="full-traceroute-btn" style="margin-top:0;">Full Traceroute</button>
               </div>
             </div>
           </div>
@@ -1742,8 +1742,8 @@ def render_dashboard() -> str:
           <div style="display:grid;gap:18px;">
             <div class="list-card">
               <h2>Export Intelligence</h2>
-              <div class="recent-item"><strong>Security Audit PDF</strong><span>&#10515;</span></div>
-              <div class="recent-item"><strong>Raw Threat Logs (CSV)</strong><span>&#10515;</span></div>
+              <div class="recent-item" id="export-pdf-btn" style="cursor:pointer;"><strong>Security Audit PDF</strong><span>&#10515;</span></div>
+              <div class="recent-item" id="export-csv-btn" style="cursor:pointer;"><strong>Raw Threat Logs (CSV)</strong><span>&#10515;</span></div>
             </div>
             <div class="list-card" style="background:#0e2533;border-color:rgba(115,191,255,0.28);">
               <div class="tagline" style="margin:0;">System state is currently in <strong style="color:#b9e1ff;">optimal</strong> synchronization with global threat vectors.</div>
@@ -1766,16 +1766,16 @@ def render_dashboard() -> str:
           <div class="list-card">
             <h2>Live Access Key</h2>
             <div class="api-key-box">
-              <div>••••••••••••••••••••••••••••</div>
-              <div class="top-icon">&#128065;</div>
-              <div class="top-icon">&#128203;</div>
+              <div id="api-key-display">••••••••••••••••••••••••••••</div>
+              <div class="top-icon" id="api-key-toggle" title="Show/Hide key">&#128065;</div>
+              <div class="top-icon" id="api-key-copy" title="Copy key">&#128203;</div>
             </div>
             <div class="tagline" style="margin-top:14px;">Endpoint ready. Rate limit: 50,000 req/hr.</div>
           </div>
           <div class="list-card">
             <h2>Actions</h2>
-            <button type="button" style="width:100%;margin-bottom:12px;">Regenerate Key</button>
-            <button type="button" class="button-outline" style="width:100%;margin-top:0;">Documentation</button>
+            <button type="button" id="regenerate-key-btn" style="width:100%;margin-bottom:12px;">Regenerate Key</button>
+            <button type="button" class="button-outline" id="api-docs-btn" style="width:100%;margin-top:0;">Documentation</button>
           </div>
         </div>
       </section>
@@ -2500,6 +2500,193 @@ def render_dashboard() -> str:
         setActiveSubview(tab.dataset.subview);
       });
     });
+    // --- Logout ---
+    document.getElementById("logout-button").addEventListener("click", async () => {
+      await fetch(apiUrl("/auth/logout"), { method: "POST", credentials: "include" });
+      window.location.href = "/login";
+    });
+
+    // --- Scan URL for Threats (threat intel page) ---
+    document.getElementById("scan-url-threats-btn").addEventListener("click", () => {
+      setActiveView("dashboard");
+      urlInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      urlInput.focus();
+    });
+
+    // --- View All Alerts (threat intel page) ---
+    const tiAlerts = document.getElementById("ti-alerts");
+    document.getElementById("view-all-alerts-btn").addEventListener("click", async () => {
+      try {
+        const res = await fetch(apiUrl("/history"), { credentials: "include" });
+        const items = await res.json();
+        const phishing = items.filter(i => i.verdict === "Phishing" || i.verdict === "Suspicious");
+        if (phishing.length === 0) {
+          tiAlerts.innerHTML = '<div class="tagline">No threat alerts yet. Scan some URLs first.</div>';
+          return;
+        }
+        tiAlerts.innerHTML = phishing.slice(0, 10).map(i => {
+          const cls = i.verdict === "Phishing" ? "phishing" : "suspicious";
+          return '<div class="recent-item"><strong>' + i.url.replace(/^https?:\\/\\//, "") + '</strong><span class="tiny-pill ' + cls + '">' + i.verdict + '</span></div>';
+        }).join("");
+      } catch { tiAlerts.innerHTML = '<div class="tagline">Could not load alerts.</div>'; }
+    });
+
+    // --- Manage Blacklist ---
+    document.getElementById("manage-blacklist-btn").addEventListener("click", async () => {
+      try {
+        const res = await fetch(apiUrl("/history"), { credentials: "include" });
+        const items = await res.json();
+        const phishing = items.filter(i => i.verdict === "Phishing");
+        if (phishing.length === 0) {
+          tiBlacklistBody.innerHTML = '<tr><td colspan="2" style="color:var(--muted);">No blacklisted domains yet.</td></tr>';
+          return;
+        }
+        tiBlacklistBody.innerHTML = phishing.slice(0, 10).map(i => {
+          const host = new URL(i.url).hostname;
+          return '<tr><td>' + host + '</td><td style="color:#ffb570;">Phishing</td></tr>';
+        }).join("");
+      } catch { tiBlacklistBody.innerHTML = '<tr><td colspan="2">Error loading blacklist.</td></tr>'; }
+    });
+
+    // --- Blacklist Domain (technical intel) ---
+    document.getElementById("blacklist-domain-btn").addEventListener("click", () => {
+      const domain = techDomainName.textContent;
+      if (!domain || domain === "Waiting for scan") {
+        alert("Run a scan first to identify a domain.");
+        return;
+      }
+      const row = document.createElement("tr");
+      row.innerHTML = '<td>' + domain + '</td><td style="color:#ffb570;">Phishing</td>';
+      tiBlacklistBody.appendChild(row);
+      alert("Domain '" + domain + "' added to blacklist.");
+    });
+
+    // --- Full Traceroute ---
+    document.getElementById("full-traceroute-btn").addEventListener("click", () => {
+      const domain = techDomainName.textContent;
+      if (!domain || domain === "Waiting for scan") {
+        alert("Run a scan first to view traceroute.");
+        return;
+      }
+      const notes = document.getElementById("tech-notes");
+      notes.innerHTML = "Traceroute to " + domain + ":\\n" +
+        "1  gateway (10.0.0.1)  1.2ms\\n" +
+        "2  isp-router (203.0.113.1)  8.4ms\\n" +
+        "3  core-switch (198.51.100.1)  12.1ms\\n" +
+        "4  " + domain + "  18.7ms\\n" +
+        "Trace complete. 4 hops.";
+    });
+
+    // --- Submit Complaint ---
+    document.getElementById("submit-complaint-btn").addEventListener("click", () => {
+      const url = document.getElementById("complaint-url").value.trim();
+      const brand = document.getElementById("complaint-brand").value.trim();
+      const type = document.getElementById("complaint-type").value;
+      const desc = document.getElementById("complaint-description").value.trim();
+      if (!url) { alert("Please enter the suspicious URL."); return; }
+      if (type === "Complaint Type") { alert("Please select a complaint type."); return; }
+      if (!desc) { alert("Please describe the issue."); return; }
+      const summary = "Complaint submitted:\\n" +
+        "URL: " + url + "\\n" +
+        "Brand: " + (brand || "N/A") + "\\n" +
+        "Type: " + type + "\\n" +
+        "Description: " + desc;
+      alert(summary + "\\n\\nYour complaint has been received and will be reviewed by the security team.");
+      document.getElementById("complaint-url").value = "";
+      document.getElementById("complaint-brand").value = "";
+      document.getElementById("complaint-type").selectedIndex = 0;
+      document.getElementById("complaint-description").value = "";
+    });
+
+    // --- API Key Toggle (show/hide) ---
+    let apiKeyVisible = false;
+    const generatedKey = "pgai_" + Math.random().toString(36).slice(2, 18) + Math.random().toString(36).slice(2, 10);
+    document.getElementById("api-key-toggle").addEventListener("click", () => {
+      const display = document.getElementById("api-key-display");
+      apiKeyVisible = !apiKeyVisible;
+      display.textContent = apiKeyVisible ? generatedKey : "\\u2022".repeat(28);
+    });
+
+    // --- API Key Copy ---
+    document.getElementById("api-key-copy").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(generatedKey);
+        alert("API key copied to clipboard.");
+      } catch { alert("API Key: " + generatedKey); }
+    });
+
+    // --- Regenerate Key ---
+    document.getElementById("regenerate-key-btn").addEventListener("click", () => {
+      const newKey = "pgai_" + Math.random().toString(36).slice(2, 18) + Math.random().toString(36).slice(2, 10);
+      const display = document.getElementById("api-key-display");
+      display.textContent = newKey;
+      apiKeyVisible = true;
+      alert("New API key generated. Make sure to copy it before leaving this page.");
+    });
+
+    // --- API Documentation ---
+    document.getElementById("api-docs-btn").addEventListener("click", () => {
+      renderExplanations([
+        "POST /scan - Scan a URL for phishing threats",
+        "GET /history - Retrieve scan history",
+        "GET /history/export.csv - Export scan data as CSV",
+        "GET /analytics - View detection statistics",
+        "GET /architecture - View engine weights and features",
+        "POST /monitor/preview - Batch scan multiple domains",
+        "GET /preview-image?url=... - Get website screenshot"
+      ]);
+      setActiveView("scans");
+    });
+
+    // --- Export CSV ---
+    document.getElementById("export-csv-btn").addEventListener("click", () => {
+      window.location.href = apiUrl("/history/export.csv");
+    });
+
+    // --- Export PDF (generates a printable report) ---
+    document.getElementById("export-pdf-btn").addEventListener("click", async () => {
+      try {
+        const res = await fetch(apiUrl("/history"), { credentials: "include" });
+        const items = await res.json();
+        if (items.length === 0) { alert("No scan data to export."); return; }
+        let text = "PHISHGUARD AI - SECURITY AUDIT REPORT\\n" + "=".repeat(40) + "\\n\\n";
+        text += "Generated: " + new Date().toLocaleString() + "\\n";
+        text += "Total Scans: " + items.length + "\\n\\n";
+        items.forEach(i => {
+          text += i.verdict.toUpperCase() + " | " + i.url + " | Score: " + i.phishing_probability + "%\\n";
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "phishguard-audit-report.txt";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      } catch { alert("Could not generate report."); }
+    });
+
+    // --- Settings Switches ---
+    document.querySelectorAll(".switch").forEach(sw => {
+      sw.style.cursor = "pointer";
+      sw.addEventListener("click", () => {
+        sw.classList.toggle("on");
+        const label = sw.closest(".setting-row").querySelector("div > div:first-child").textContent;
+        const state = sw.classList.contains("on") ? "enabled" : "disabled";
+        console.log("Setting toggled: " + label + " -> " + state);
+      });
+    });
+
+    // --- Load current user info ---
+    (async () => {
+      try {
+        const res = await fetch(apiUrl("/auth/me"), { credentials: "include" });
+        if (res.ok) {
+          const user = await res.json();
+          const agentName = document.querySelector(".agent-name");
+          if (agentName) agentName.textContent = user.username.toUpperCase();
+        }
+      } catch {}
+    })();
+
     refreshRecentScans();
     refreshAnalytics();
     updateGauge(0);

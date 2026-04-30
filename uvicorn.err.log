@@ -1,0 +1,6 @@
+D:\detect fake web\url_scanner\dashboard.py:1891: SyntaxWarning: "\/" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\/"? A raw string is also an option.
+  dashboardResultUrl.textContent = body.url.replace(/^https?:\/\//, "");
+INFO:     Started server process [20760]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
